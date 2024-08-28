@@ -7,25 +7,19 @@ public class HtmlValidator {
 	public static Stack<HtmlTag> isValidHtml(Queue<HtmlTag> tags) {
 
 		Stack<HtmlTag> openTags = new Stack<>();
-		int tagsLenght = tags.size();
-		
-		tags.stream()
-				.filter(HtmlTag::isOpenTag)
-				.forEach(openTags::push);
-		
-		for (int i = 0; i < tagsLenght; i++) {
-			if (tags.peek().isOpenTag()) tags.poll();
-			else if (tags.peek().isSelfClosing()) tags.poll();
-			else if (!tags.peek().isOpenTag() && tags.peek().matches(openTags.peek())) {
-				tags.poll();
-				openTags.pop();
-			} else if (!tags.peek().isOpenTag() && !tags.peek().matches(openTags.peek())) break;
-		}
 
-		if (!tags.isEmpty()) {
-			return null;
+		while (!tags.isEmpty()){
+			if (tags.peek().isSelfClosing()) tags.poll();
+			else if (tags.peek().isOpenTag()) openTags.push(tags.poll());
+			else {
+				if (openTags.isEmpty()) return null;
+				else if (tags.peek().matches(openTags.peek())) {
+					openTags.pop();
+					tags.poll();
+				} else break;
+			}
 		}
-		return openTags; // this line is here only so this code will compile if you don't modify it
+		return openTags;
 	}
 	
 
